@@ -1,0 +1,259 @@
+def Pence(n):
+    list = []
+    if n > 0:
+        for i in range(n):
+            list.append(1)
+        return(1, tuple(list))
+    elif n == 0:
+        return(1, tuple())
+    else:
+        return (0, 'None')
+        
+def FiveP(n):
+    # YOUR CODE HERE
+    list = []
+    if n == 0:
+        return (1, tuple())
+    elif n % 5 != 0:
+        return (0, None)
+    else:
+        for i in range(n//5):
+            list.append(5)
+        return (1, tuple(list))
+        
+def ChangeFivePandP(n):
+    # m - maximum number of 5p options; so we can have 0, 1 ... m number of 5p in a change
+    m = n // 5
+    if n>0:
+        k = 1
+        answer_overall = [m+k]
+        answer = []
+        for i in range(m+1): #possible number of 5s, i.e. 0,1,...m
+            new_list = []
+            #l - number of ones
+            l = n - 5*i
+            #for each possible outcome we have i 5's and l 1's
+            new_list.extend(5 for _ in range(i))
+            new_list.extend(1 for _ in range(l))
+            #converting those into tuples
+            new_tuple = tuple(new_list)
+            #adding tuples to the list
+            answer.append(new_tuple)
+        answer_overall.append(answer)
+        final_tuple = tuple(answer_overall)
+
+    elif n == 0:
+        tup = ()
+        a = 1
+        final_tuple = (a,tup)
+
+    else:
+        lst = []
+        a = 0
+        final_tuple = (a,lst)
+
+    return final_tuple
+    
+    
+import math
+def ChangeTenPFivePandP(n):
+    # YOUR CODE HERE
+    if n < 0:
+        return 0
+    elif n == 0:
+        return 1
+    elif n < 10:
+        k = 1
+        m = n // 5
+        return k+m
+    else:
+        sum = 0
+        t = n // 10 #maximum number of 10's
+        for i in range(t+1):
+            x = n-10*i #sum that is left after the number of 10's is given
+            k = 1
+            m = x // 5
+            sum += k
+            sum += m
+        return sum
+     
+ def ChangeTwoPandP(n):
+    # YOUR CODE HERE
+    neew_list=[]
+    one_pence_list=[]
+    plain_list=[]
+    extra=[]
+    #maximum number of 2's
+    m = n // 2
+    if n < 0:
+        return (0,[])
+    else:
+        while m > 0:
+            new_list=[]
+            for i in range(m):
+                new_list.append(2) #adding a possible numbers of 2's to the list
+            for i in range(n-2*m): 
+                new_list.append(1) #adding 1's on the places that are left after we have added 2's
+            
+            #converting list into a tuple
+            new_tuple = tuple(new_list)
+            
+            #making a list of possible tuples
+            plain_list.append(new_tuple)
+            
+            #now we need to see what happens if the number of 2's is not maximum (gradingly decreasing)
+            m -= 1
+        
+        #always have a possible change consisted of only 1's  
+        for i in range(n):
+            extra.append(1)
+        
+        #adding this variant to the general answer
+        plain_list.append(tuple(extra))
+        
+        return (n//2+1, plain_list)
+def TilePermutations(seq):
+    # YOUR CODE HERE
+    import numpy as np
+    import math
+    from itertools import combinations
+    
+    #make a list of length of the given sequence
+    empty_list = []
+    for i in range(len(seq)):
+        empty_list.append(i)
+    
+    #transform given sequence into a list so it is easier to work with
+    new_list = list(seq)
+    
+    #count the number of 1's in the given sequence
+    number_of_ones = new_list.count(1)
+    
+    #count the number of 2's in the given sequence
+    number_of_twos = len(new_list) - number_of_ones
+    
+    
+    #number of ways to put 1's:
+    ways = int(math.factorial(len(new_list))/(math.factorial(number_of_ones)*math.factorial(number_of_twos)))
+    
+    #choosing the places for 2's when we already put 1's
+    places = combinations(empty_list, number_of_twos)
+
+    #creating an empty list for the future answer
+    answer = []
+    
+    for value in places:
+        empty_list = []
+        for i in range(len(seq)):
+                empty_list.append(1)
+        place_index = list(value)
+        for i in place_index:
+            empty_list[i]=2
+        new_tuple = tuple(empty_list)
+        answer.append(new_tuple)
+    return answer
+    
+def TilingString(seq):
+    # YOUR CODE HERE
+    new_list = []
+    new_seq = list(seq)
+    for tile in (new_seq):
+        if tile == 1:
+            new_list.append('|')
+        else:
+            new_list.append('=')
+    new_string =''.join(map(str,new_list))
+    return new_string
+
+def PrintTilingsLength(n):
+    # YOUR CODE HERE
+    if n>0:
+        list_of_possible_combinations = ChangeTwoPandP(n)[1]
+        for item in list_of_possible_combinations:
+            possible_permutations = TilePermutations(item)
+            for j in possible_permutations:
+                answer = TilingString(j)
+                print(answer)
+    else:
+        print()
+    
+def TilingsCount(n):
+    # YOUR CODE HERE
+    def TilingsCount(n): #I need to define this function once more so it doesnt return anything as does when I define it in the previous task
+    # YOUR CODE HERE
+        def ChangeTwoPandP(n):
+            neew_list=[]
+            one_pence_list=[]
+            plain_list=[]
+            extra=[]
+            m = n // 2
+            x = n // 2
+            while m != 0:
+                new_list=[]
+                for i in range(m):
+                    new_list.append(2)
+                for i in range(n-2*m):
+                    new_list.append(1)
+            
+                new_tuple = tuple(new_list)
+                plain_list.append(new_tuple)
+                m -= 1
+            
+            for i in range(n):
+                extra.append(1)
+            plain_list.append(tuple(extra))
+            return (x+1, plain_list)
+    
+        sum = 0
+
+        if n>0:
+            list_of_possible_combinations = ChangeTwoPandP(n)[1]
+            for item in list_of_possible_combinations:
+                possible_permutations = TilePermutations(item)
+                for j in possible_permutations:
+                    sum += 1
+        elif n == 0:
+            sum = 1
+    
+    #actual code begins here
+    sum = 0
+    if n>0:
+        list_of_possible_combinations = ChangeTwoPandP(n)[1]
+        for item in list_of_possible_combinations:
+            possible_permutations = TilePermutations(item)
+            for j in possible_permutations:
+                sum += 1   
+    elif n == 0:
+        sum = 1
+    return sum
+   
+
+import math
+for n in range(0,11):
+    def check(n):
+        an = int(((((1+math.sqrt(5))/2)**(n+1))-(((1-math.sqrt(5))/2)**(n+1)))/math.sqrt(5)) #here we need (n+1) power as an(0) will be 0 otherwise
+        if an == TilingsCount(n):
+            print(f"For n={n} is Right")
+        else:
+            print(f"For n={n} is Wrong")
+
+    check(n)
+
+def FTC(n):
+    # YOUR CODE HERE
+    #for this recursive function we need two first terms of the sequence
+    n1 = 1 #number of tile permutations for a 0-length walk
+    n2 = 1 #number of tile permutations for a 1-length walk
+    if n<0:
+        return None
+    elif n == 0 or n == 1:
+        n = 1
+    else:
+        for i in range(3, n+2):
+            n = n1 + n2 #using recursive formula
+            n1 = n2
+            n2 = n
+    return (n)
+
+
+                   
