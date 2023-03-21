@@ -1,0 +1,477 @@
+import sympy as sym
+import numpy as np
+import math
+
+sym.init_printing()
+x, y = sym.symbols("x, y", real = True)
+f = (x**3+y**3+x*y)*sym.exp((-x**2)-(y**2))
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+
+xp = np.arange(-3.0,3.0,0.05)
+yp = np.arange(-3.0,3.0,0.05)
+X,Y = np.meshgrid(xp,yp)
+
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+
+fig = plt.figure(1,figsize=(8,8))
+ax = fig.add_subplot(111, projection='3d')
+
+ax.plot_surface(X,Y,Z,cmap='coolwarm');
+
+ax.set_xlabel('x',fontsize=14)
+ax.set_ylabel('y',fontsize=14)
+ax.set_zlabel('f(x,y)',fontsize=14)
+plt.title('3D plot of f(x,y)')
+ax.view_init(27, -90);
+
+fx = sym.diff(f,x)
+fy = sym.diff(f,y)
+
+a = sym.exp(-x**2-y**2) 
+EQ1 = fx / a
+EQ1.simplify()
+EQ2 = fy / a
+EQ = [EQ1.simplify(), EQ2.simplify()]
+Answer = sym.nonlinsolve(EQ, [x, y])
+SOLS1 = list(Answer)
+
+fxx = sym.diff(fx, x)
+fyy = sym.diff(fy, y)
+Delta = fxx*fyy - (fxy)**2
+
+SOLS1_TYPES = []
+for i in range(len(SOLS1)):
+    answer = []
+    stationary_point = Delta.subs([(x,SOLS1[i][0]), (y,SOLS1[i][1])]).simplify().evalf()
+    if stationary_point < 0:
+        #print(f"Point ({SOLS1[i][0]}, {SOLS1[i][1]}) is a saddle point")
+        point = 'saddle'
+    elif stationary_point > 0 and fxx.subs([(x,SOLS1[i][0]), (y,SOLS1[i][1])]).simplify().evalf() < 0:
+        #print(f"Point ({SOLS1[i][0]}, {SOLS1[i][1]}) is a maximum")
+        point = 'maximum'
+    elif stationary_point > 0 and fxx.subs([(x,SOLS1[i][0]), (y,SOLS1[i][1])]).simplify().evalf() > 0:
+        #print(f"Point ({SOLS1[i][0]}, {SOLS1[i][1]}) is a minimum")
+        point = 'minimum'
+    #else:
+        #print(f"Cannot determin the nature of the point ({SOLS1[i][0]}, {SOLS1[i][1]}).")
+    
+    answer.append(SOLS1[i][0]) 
+    answer.append(SOLS1[i][1])
+    answer.append(point)
+    new_answer = list(answer)
+    SOLS1_TYPES.append(new_answer)
+print(SOLS1_TYPES)
+
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(5, 5))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(-0.1, 0.1, 0.01)
+yp = np.arange(-0.1, 0.1, 0.01)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+
+C = ax.contour(X, Y, Z, levels=15, cmap="coolwarm")
+fig.colorbar(C)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Contour plot of f(x,y) around P(0,0)');
+
+
+fig, dx = plt.subplots(figsize=(5, 5))
+dx.set_aspect(1)
+
+#how to center:
+a = (1/4 - np.sqrt(5)/4) - 0.2/2
+b = (1/4 - np.sqrt(5)/4) + 0.2/2
+
+xp = np.arange(a, b, 0.001)
+yp = np.arange(a, b, 0.001)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+D = dx.contour(X, Y, Z, levels=10, cmap="coolwarm");
+fig.colorbar(D)
+
+
+dx.set_xlabel("x axis")
+dx.set_ylabel("y axis")
+plt.title('Contour plot of f(x,y) around ⁓P(-0.309,-0.309)', size=10);
+
+# for a point (0,0)
+f = (x**3+y**3+x*y)*sym.exp((-x**2)-(y**2))
+x0 = 0
+y0 = 0
+#f(x0,y0)
+a = f.subs([(x, x0), (y, y0)])
+
+#fx(x0,yo)
+b = fx.subs([(x, x0), (y, y0)])
+
+#fy(x0,yo)
+c = fy.subs([(x, x0), (y, y0)])
+
+#fxx(x0,yo)
+d = fxx.subs([(x, x0), (y, y0)])
+
+#fyy(x0,yo)
+f = fyy.subs([(x, x0), (y, y0)])
+
+#fyy(x0,yo)
+e = fxy.subs([(x, x0), (y, y0)])
+
+Q1 = a+b*(x-x0)+c*(y-y0)+0.5*(d*(x-x0)**2+2*e*(x-x0)*(y-y0)+f*(y-y0)**2)
+
+
+# for a point (1/4 - np.sqrt(5)/4,1/4 - np.sqrt(5)/4)
+f = (x**3+y**3+x*y)*sym.exp((-x**2)-(y**2))
+x0 = 1/4 - np.sqrt(5)/4
+y0 = 1/4 - np.sqrt(5)/4
+#f(x0,y0)
+a = f.subs([(x, x0), (y, y0)])
+
+#fx(x0,yo)
+b = fx.subs([(x, x0), (y, y0)])
+
+#fy(x0,yo)
+c = fy.subs([(x, x0), (y, y0)])
+
+#fxx(x0,yo)
+d = fxx.subs([(x, x0), (y, y0)])
+
+#fyy(x0,yo)
+f = fyy.subs([(x, x0), (y, y0)])
+
+#fyy(x0,yo)
+e = fxy.subs([(x, x0), (y, y0)])
+
+Q = a+b*(x-x0)+c*(y-y0)+0.5*(d*(x-x0)**2+2*e*(x-x0)*(y-y0)+f*(y-y0)**2)
+Q2 = Q.subs([(x0, 1/4 - np.sqrt(5)/4), (y0, 1/4 - np.sqrt(5)/4)]).evalf()
+
+delta = 0.5
+x0 = 0
+y0 = 0
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(-0.5, 0.5, 0.01)
+yp = np.arange(-0.5, 0.5, 0.01)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+W = X*Y
+
+E = ax.contour(X, Y, Z, levels=10, cmap="coolwarm")
+F = ax.contour(X, Y, W, levels=10)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Q1 with sigma = 0.5')
+plt.show()
+
+
+
+# f(x,y) & Q1 with sigma = 0.25
+delta = 0.5
+x0 = 0
+y0 = 0
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(-0.25, 0.25, 0.01)
+yp = np.arange(-0.25, 0.25, 0.01)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+W = X*Y
+
+E = ax.contour(X, Y, Z, levels=10, cmap="coolwarm")
+F = ax.contour(X, Y, W, levels=10)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Q1 with sigma = 0.25')
+plt.show()
+
+
+
+
+# f(x,y) & Q1 with sigma = 0.05
+delta = 0.5
+x0 = 0
+y0 = 0
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(-0.05, 0.05, 0.005)
+yp = np.arange(-0.05, 0.05, 0.005)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+W = X*Y
+
+E = ax.contour(X, Y, Z, levels=10, cmap="coolwarm")
+F = ax.contour(X, Y, W, levels=10)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Q1 with sigma = 0.05')
+plt.show()
+#ax.legend(loc='upper left', bbox_to_anchor=(1.5, 0.5));
+
+# f(x,y) & Q2 with sigma = 0.5
+sigma = 0.5
+x0 = 1/4 - np.sqrt(5)/4
+y0 = 1/4 - np.sqrt(5)/4
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(x0-sigma, x0+sigma, 0.01)
+yp = np.arange(x0-sigma, x0+sigma, 0.01)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+
+#The programme didn't want to work with the expression of Q2 found before so I needed to copy and paste it once more with the right arrangment
+W = 3.46944695195361*(10**(-17))*X+3.46944695195361*(10**(-17))*Y-0.801768282432288*(X+0.309016994374947)**2+0.5*(1.62927346893878*X+0.503473190386306)*(Y+0.309016994374947)-0.801768282432*(Y+0.309016994374947)**2+0.0301332921491934
+
+
+
+E = ax.contour(X, Y, Z, levels=10, cmap="coolwarm")
+F = ax.contour(X, Y, W, levels=10)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Q2 with sigma = 0.5')
+plt.show()
+
+
+
+# f(x,y) & Q2 with sigma = 0.25
+sigma = 0.25
+x0 = 1/4 - np.sqrt(5)/4
+y0 = 1/4 - np.sqrt(5)/4
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(x0-sigma, x0+sigma, 0.001)
+yp = np.arange(x0-sigma, x0+sigma, 0.001)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+W = 3.46944695195361*(10**(-17))*X+3.46944695195361*(10**(-17))*Y-0.801768282432288*(X+0.309016994374947)**2+0.5*(1.62927346893878*X+0.503473190386306)*(Y+0.309016994374947)-0.801768282432*(Y+0.309016994374947)**2+0.0301332921491934
+
+E = ax.contour(X, Y, Z, levels=10, cmap="coolwarm")
+F = ax.contour(X, Y, W, levels=10)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Q2 with sigma = 0.25')
+plt.show()
+
+
+
+
+
+# f(x,y) & Q2 with sigma = 0.05
+sigma = 0.05
+x0 = 1/4 - np.sqrt(5)/4
+y0 = 1/4 - np.sqrt(5)/4
+%matplotlib inline
+
+fig, ax = plt.subplots(figsize=(6, 6))
+ax.set_aspect(1)
+
+#center:
+xp = np.arange(x0-sigma, x0+sigma, 0.001)
+yp = np.arange(x0-sigma, x0+sigma, 0.001)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+W = 3.46944695195361*(10**(-17))*X+3.46944695195361*(10**(-17))*Y-0.801768282432288*(X+0.309016994374947)**2+0.5*(1.62927346893878*X+0.503473190386306)*(Y+0.309016994374947)-0.801768282432*(Y+0.309016994374947)**2+0.0301332921491934
+
+E = ax.contour(X, Y, Z, levels=10, cmap="coolwarm")
+F = ax.contour(X, Y, W, levels=10)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+plt.title('Q2 with sigma = 0.05')
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.set_aspect(1)
+
+xp = np.arange(-3, 3, 0.01)
+yp = np.arange(-3, 3, 0.01)
+
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+
+C = ax.contour(X, Y, Z, levels=15, colors="k");
+ax.clabel(C)
+C = ax.contourf(X, Y, Z, levels=15, cmap="coolwarm");
+fig.colorbar(C)
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis");
+
+
+#x∈[-1.5, -0.5] & y∈[-0.5, 0.5] - local minimum
+%matplotlib inline
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.set_aspect(1)
+xp = np.arange(-1.5,-0.5, 0.01)
+yp = np.arange(-0.5, 0.5, 0.01)
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+C = ax.contour(X, Y, Z, levels=30, colors="k")
+ax.clabel(C)
+C = ax.contourf(X, Y, Z, levels=30, cmap="coolwarm")
+fig.colorbar(C)
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+ax.set_title("Zoom at the first minimum")
+plt.show()
+
+#----------------------------------
+
+#x∈[0.5, 0.5] & y∈[-1.5, -0.5] - local minimum
+%matplotlib inline
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.set_aspect(1)
+xp = np.arange(-0.5, 0.5, 0.01)
+yp = np.arange(-1.5, 0.5, 0.01)
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+D = ax.contour(X, Y, Z, levels=30, colors="k")
+ax.clabel(D)
+D = ax.contourf(X, Y, Z, levels=30, cmap="coolwarm")
+fig.colorbar(D)
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+ax.set_title("Zoom at the second minimum")
+plt.show()
+
+#----------------------------------
+
+#x∈[0.5, 0.5] & y∈[-1.5, -0.5] - local minimum
+%matplotlib inline
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.set_aspect(1)
+xp = np.arange(0, 2, 0.01)
+yp = np.arange(0, 2, 0.01)
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+D = ax.contour(X, Y, Z, levels=30, colors="k")
+ax.clabel(D)
+D = ax.contourf(X, Y, Z, levels=30, cmap="coolwarm")
+fig.colorbar(D)
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+ax.set_title("Zoom at the maximum")
+plt.show()
+
+SOLS_TOGETHER = SOLS1_TYPES + SOLS2_TYPES
+SOLS_TOGETHER
+M = 0
+m = 0
+s = 0
+
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.set_aspect(1)
+
+xp = np.arange(-3, 3, 0.01)
+yp = np.arange(-3, 3, 0.01)
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+
+C = ax.contour(X, Y, Z, levels=20, colors="k");
+ax.clabel(C)
+
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+
+
+for points in SOLS_TOGETHER:
+    if points[2]=='maximum':
+        if M == 0:
+            ax.scatter(points[0], points[1], marker="p", color="r", s=130, zorder=2, label="Maximum")
+            M+=1
+        else:
+            ax.scatter(points[0], points[1], marker="p", color="r", s=130, zorder=2)
+    elif points[2]=='minimum':
+        if m == 0:
+            ax.scatter(points[0], points[1], marker="o", color="b", s=130, zorder=2, label="Minimum")
+            m+=1
+        else:
+            ax.scatter(points[0], points[1], marker="o", color="b", s=130, zorder=2)
+    else:
+        if s == 0:
+            ax.scatter(points[0], points[1], marker="*", color="g", s=130, zorder=2, label="Saddle Point")
+            s += 1
+        else:
+            ax.scatter(points[0], points[1], marker="*", color="g", s=130, zorder=2)
+
+ax.set_title("Countour plot with stationary points")
+ax.legend(loc='upper left', bbox_to_anchor=(1, 1));
+
+
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.set_aspect(1)
+
+xp = np.arange(-3, 3, 0.01)
+yp = np.arange(-3, 3, 0.01)
+X, Y = np.meshgrid(xp, yp)
+Z = (X**3+Y**3+X*Y)*np.exp((-X**2)-(Y**2))
+W = (X**2+Y**2-1)
+C = ax.contour(X, Y, Z, levels=15, colors="g")
+D = ax.contour(X, Y, W, levels=0, colors="black")
+
+
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis");
+
+M = 0
+m = 0
+for point in SOLS3_TYPES:
+    x0 = point[0]
+    y0 = point[1]
+    if point[2] == 'maximum':
+        if M == 0:
+            ax.scatter(x0, y0, marker="o", color="b", s=130, zorder=2, label="Maximum")
+            M += 1
+        else:
+            ax.scatter(x0, y0, marker="o", color="b", s=130, zorder=2)
+    else:
+        if m == 0:
+            ax.scatter(x0, y0, marker="*", color="r", s=130, zorder=2, label="Minimum")
+            m += 1
+        else:
+            ax.scatter(x0, y0, marker="*", color="r", s=130, zorder=2)
+
+ax.set_title("Countour plot with stationary points subject to contraint")
+ax.legend(loc='upper left', bbox_to_anchor=(1, 1));
